@@ -3,4 +3,4 @@
   app.use(express.static('public'));
   app.use(express.static('js'));
   app.use(express.static('assets'));
-  app.listen(4001);
+  app.listen(process.env.PORT || 4001);
