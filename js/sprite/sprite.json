@@ -1,0 +1,21 @@
+{"frames": {
+
+"npc_butterfly__x1_fly-top_png_1354829528.png":
+{
+	"frame": {"x":2,"y":2,"w":887,"h":435},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":16,"y":13,"w":887,"h":435},
+	"sourceSize": {"w":910,"h":455},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "sprite.png",
+	"format": "RGBA8888",
+	"size": {"w":891,"h":439},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:58d26b1c822c2650e743716c13e62a3d:7b2688657e6c58ba34e0ae3b7392e6ee:68d88b3cf7eafc9b5accfffdfb2fda91$"
+}
+}

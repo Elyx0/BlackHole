@@ -1,0 +1,25 @@
+body {
+    margin:0;
+    padding:0;
+    #bg
+    {
+      //  visibility: hidden;
+    }
+    background: grey;
+    .main
+    {
+        &__test
+        {
+            display: none;
+        }
+        &--modif
+        {
+            transition: all 1s ease-in;
+        }
+        &__cookie
+        {
+            box-sizing: none;
+            //opacity: 0;
+        }
+    }
+}

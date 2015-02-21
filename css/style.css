@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: grey; }
+  body .main__test {
+    display: none; }
+  body .main--modif {
+    -webkit-transition: all 1s ease-in;
+            transition: all 1s ease-in; }
+  body .main__cookie {
+    box-sizing: none; }
+
+/*# sourceMappingURL=style.css.map */
