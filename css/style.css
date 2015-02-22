@@ -64,8 +64,8 @@ body {
     background: #07121b url(http://www.amrzek.com/space.png) repeat 0px 0px;
     -webkit-animation: space 60s linear infinite;
             animation: space 60s linear infinite;
-    -webkit-transition: all 5s ease-in-out;
-            transition: all 5s ease-in-out; }
+    -webkit-transition: all 1s ease-in-out;
+            transition: all 1s ease-in-out; }
   body.go .starsWrapper {
     opacity: 0; }
   body .inputWrapper {
@@ -73,6 +73,7 @@ body {
     bottom: 80px;
     width: 0%;
     margin-left: 10%;
+    font-family: Lato;
     -webkit-transition: all 1s ease-in-out;
             transition: all 1s ease-in-out; }
     body .inputWrapper #request {
@@ -91,7 +92,7 @@ body {
       position: relative;
       content: '';
       opacity: 0.8;
-      border-bottom: 3px solid orange; }
+      border-bottom: 3px dotted orange; }
     body .inputWrapper.ready {
       width: 80%; }
       body .inputWrapper.ready #request {

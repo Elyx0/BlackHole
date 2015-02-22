@@ -1,3 +1,5 @@
+font = 'Lato';
+
 function Scene(name)
 {
   this.name = name;
@@ -36,7 +38,6 @@ Scene.prototype.drawButterfly = function()
 
 Scene.prototype.prepare = function (keyword)
 {
-  var font = 'Arial';
   var ctx = this.context;
   var canvas = this.canvas;
   var measure = {width:0};
@@ -60,7 +61,7 @@ Scene.prototype.prepare = function (keyword)
   measure.height = r[0]-(r[2]/1.2);
   //End of stupid bullshit
   //
-  resolution = ~~((cw / measure.width + ch/ measure.height) + keyword.length/2 + 1);
+  resolution = ~~((cw / measure.width + ch/ measure.height) + keyword.length/5 + 1);
   this.resolution = resolution;
   //resolution = 30;
   console.log(measure,resolution,FontMetric(font,fontSize,keyword));
@@ -73,7 +74,6 @@ Scene.prototype.setupParticles = function (getTint)
   var ctx = this.context;
   var canvas = this.canvas;
   var resolution = this.resolution;
-  particles = [];
   var imageData,
     image_data,
     pixel,
@@ -100,21 +100,27 @@ Scene.prototype.setupParticles = function (getTint)
             //debugger;
             new ButterflyParticle(x,y,rgba);
           }
+          // Means our butterfly doesn't have enough particles :( ? what to do.
           else
           {
-            new Particle(x,y);
+            var rParticle = particles[~~(Math.random()*particles.length)];
+            new ButterflyParticle(rParticle.initialX,rParticle.y,rParticle.rgba);
+            particles[index].homeX=x;
+            particles[index].homeY=y;
           }
 
         }
         else
         {
-         // particles[index].homeX=x;
-         // particles[index].homeY=y;
+         //debugger;
+         particles[index].homeX=x;
+         particles[index].homeY=y;
         }
         index++;
       }
     }
   }
+  console.log('Found:',index);
   //debugger;
   //particles.splice(index,particles.length-index);
 };

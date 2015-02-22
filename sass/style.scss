@@ -55,7 +55,7 @@ body {
         bottom: 0;
         background: #07121b url(http://www.amrzek.com/space.png) repeat 0px 0px;
         animation: space 60s linear infinite;
-        transition: all 5s ease-in-out;
+        transition: all 1s ease-in-out;
     }
     &.go
     {
@@ -73,6 +73,7 @@ body {
         bottom: 80px;
         width: 0%;
         margin-left: 10%;
+        font-family: Lato;
         transition: all 1s ease-in-out;
         #request
         {
@@ -93,7 +94,7 @@ body {
             position: relative;
             content: '';
             opacity: 0.8;
-            border-bottom: 3px solid orange;
+            border-bottom: 3px dotted orange;
         }
         &.ready
         {

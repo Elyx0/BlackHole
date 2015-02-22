@@ -122,6 +122,11 @@ Particle.prototype.move = function()
   var homeDX = this.homeX-this.x;
   var homeDY = this.homeY-this.y;
   var distance = Math.sqrt(Math.pow(homeDX,2)+Math.pow(homeDY,2));
+  if (this.xVelocity < 0.0001 && this.yVelocity < 0.0001)
+  {
+    this.finished = true;
+    return;
+  }
   var attractForce = distance*0.01;
   var angle = Math.atan2(homeDY,homeDX);
   this.xVelocity += attractForce*Math.cos(angle);
