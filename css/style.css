@@ -1,7 +1,9 @@
 body {
   margin: 0;
   padding: 0;
-  background: grey; }
+  background: black; }
+  body #bg {
+    visibility: hidden; }
   body .main__test {
     display: none; }
   body .main--modif {
