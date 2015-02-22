@@ -1,15 +1,102 @@
+html {
+  box-sizing: border-box; }
+
+*, *:before, *:after {
+  box-sizing: inherit; }
+
+@-webkit-keyframes bgsize {
+  0% {
+    background-size: 200% 200%; }
+
+  80% {
+    background-size: 10000% 10000%; }
+
+  90% {
+    background: none;
+    background: #191a23; }
+
+  100% {
+    background: black; } }
+
+@keyframes bgsize {
+  0% {
+    background-size: 200% 200%; }
+
+  80% {
+    background-size: 10000% 10000%; }
+
+  90% {
+    background: none;
+    background: #191a23; }
+
+  100% {
+    background: black; } }
+
+@-webkit-keyframes space {
+  from {
+    background-position: 0px 0px; }
+
+  to {
+    background-position: -700px 0px; } }
+
+@keyframes space {
+  from {
+    background-position: 0px 0px; }
+
+  to {
+    background-position: -700px 0px; } }
+
 body {
   margin: 0;
   padding: 0;
   background: black; }
-  body #bg {
+  body .bodywrapper {
+    position: absolute; }
+  body #bg, body #butterfly {
     visibility: hidden; }
-  body .main__test {
-    display: none; }
-  body .main--modif {
-    -webkit-transition: all 1s ease-in;
-            transition: all 1s ease-in; }
-  body .main__cookie {
-    box-sizing: none; }
+  body .starsWrapper {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #07121b url(http://www.amrzek.com/space.png) repeat 0px 0px;
+    -webkit-animation: space 60s linear infinite;
+            animation: space 60s linear infinite;
+    -webkit-transition: all 5s ease-in-out;
+            transition: all 5s ease-in-out; }
+  body.go .starsWrapper {
+    opacity: 0; }
+  body .inputWrapper {
+    position: fixed;
+    bottom: 80px;
+    width: 0%;
+    margin-left: 10%;
+    -webkit-transition: all 1s ease-in-out;
+            transition: all 1s ease-in-out; }
+    body .inputWrapper #request {
+      border: 0;
+      background: transparent;
+      height: 140px;
+      width: 100%;
+      outline: none;
+      font-size: 120px;
+      color: whitesmoke;
+      text-align: left; }
+    body .inputWrapper:after {
+      -webkit-transition: all 1s ease-in-out;
+              transition: all 1s ease-in-out;
+      display: block;
+      position: relative;
+      content: '';
+      opacity: 0.8;
+      border-bottom: 3px solid orange; }
+    body .inputWrapper.ready {
+      width: 80%; }
+      body .inputWrapper.ready #request {
+        margin-bottom: 10px; }
+    body .inputWrapper.go {
+      opacity: 0; }
 
 /*# sourceMappingURL=style.css.map */

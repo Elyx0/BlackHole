@@ -1,25 +1,112 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+@keyframes bgsize
+{
+    0%
+    {
+        background-size: 200% 200%;
+    }
+    80%
+    {
+        background-size: 10000% 10000%;
+    }
+    90%
+    {
+        background: none;
+        background: rgb(25,26,35);
+    }
+    100%
+    {
+        background:black;
+    }
+}
+
+@keyframes space
+{
+from {background-position:0px 0px;}
+to {background-position:-700px 0px;}
+}
+
 body {
     margin:0;
     padding:0;
-    #bg
+    background:black;
+    .bodywrapper
+    {
+        position:absolute;
+    }
+    #bg,#butterfly
     {
        visibility: hidden;
     }
-    background: black;
-    .main
+
+    .starsWrapper
     {
-        &__test
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #07121b url(http://www.amrzek.com/space.png) repeat 0px 0px;
+        animation: space 60s linear infinite;
+        transition: all 5s ease-in-out;
+    }
+    &.go
+    {
+       // animation: bgsize 1s ease-in;
+       // background-size: 10000% 10000%;
+        //background: black;
+        .starsWrapper
         {
-            display: none;
+            opacity:0;
         }
-        &--modif
+    }
+    .inputWrapper
+    {
+        position: fixed;
+        bottom: 80px;
+        width: 0%;
+        margin-left: 10%;
+        transition: all 1s ease-in-out;
+        #request
         {
-            transition: all 1s ease-in;
+            border: 0;
+            background: transparent;
+            //background: rgba(0,0,0,0.2);
+            height: 140px;
+            width: 100%;
+            outline: none;
+            font-size: 120px;
+            color: whitesmoke;
+            text-align: left;
         }
-        &__cookie
+        &:after
         {
-            box-sizing: none;
-            //opacity: 0;
+            transition: all 1s ease-in-out;
+            display: block;
+            position: relative;
+            content: '';
+            opacity: 0.8;
+            border-bottom: 3px solid orange;
+        }
+        &.ready
+        {
+          width: 80%;
+          #request
+          {
+            margin-bottom: 10px;
+            //coucou
+          }
+        }
+        &.go
+        {
+            opacity:0;
         }
     }
 }
