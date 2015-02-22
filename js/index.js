@@ -10,6 +10,7 @@ $('.inputWrapper').addClass('ready');
 setTimeout(function(){
   $('#request').focus().keypress(function(e) {
     if(e.which == 13) {
+        $(this).blur();
         $('.inputWrapper,body').addClass('go');
         go($(this).val());
         setTimeout(function(){
@@ -17,7 +18,7 @@ setTimeout(function(){
         },1000);
     }
   });
-}, 1300);
+}, 1500);
 
 var stage = new PIXI.Stage();
 var container = new PIXI.DisplayObjectContainer();
