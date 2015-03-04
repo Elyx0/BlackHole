@@ -8,15 +8,27 @@ Field.prototype.setMass = function(mass) {
   this.drawColor = mass < 0 ? "#f00" : "#0f0";
 };
 
-function StarParticle()
+function StarParticle(neutral)
 {
   var pSprite = new PIXI.Sprite(particleTexture);
-  this.position = new Vector(Math.random()*cw,Math.random()*ch);
-  this.velocity = new Vector(Math.random()*10-5,Math.random()*10-5);
+  var scale;
 
-  var scale = Math.random()*0.05+0.03;
+  if (neutral)
+  {
+    this.reset();
+  }
+  else
+  {
+      this.position = new Vector(Math.random()*cw,Math.random()*ch);
+      scale  = Math.random()*0.05+0.03;
+      this.alpha = Math.random()*0.5;
+      this.velocity = new Vector(Math.random()*10-5,Math.random()*10-5);
+  }
+
+
+
   this.scale = new Vector(scale,scale);
-  pSprite.alpha = this.alpha = Math.random()*0.5;
+  pSprite.alpha = this.alpha;
   pSprite.position = this.position;
   pSprite.anchor.set(0.5);
   pSprite.scale = this.scale;
@@ -25,6 +37,23 @@ function StarParticle()
   particles.push(this);
   container.addChild(pSprite);
 }
+
+StarParticle.prototype.reset = function()
+{
+  var pSprite = this.sprite;
+  scale = 0.1;
+  this.alpha = 1;
+  var wCoef = Math.random() > 0.5 ? -1 : 1;
+  var hCoef = Math.random() > 0.5 ? -1 : 1;
+  this.velocity = new Vector(wCoef*(Math.random()+0.1),hCoef*(Math.random()+0.1));
+  this.position = new Vector(cw/2+wCoef*(Math.random()*20+10),ch/2+hCoef*(Math.random()*20+10));
+  this.scale = new Vector(scale,scale);
+  pSprite.alpha = this.alpha;
+  pSprite.position = this.position;
+  pSprite.anchor.set(0.5);
+  pSprite.scale.set(scale);
+  pSprite.tint = Math.random() < 0.7 ? '0x' + rgbToHex(255,184,0) : '0xffffff';
+};
 
 StarParticle.prototype.moveToWord = function()
 {

@@ -6,6 +6,8 @@ stats.domElement.style.position = 'absolute';
 stats.domElement.style.left = '0px';
 stats.domElement.style.top = '0px';
 document.body.appendChild( stats.domElement );
+var token = "71ffe134c2cb7f2c5375d7c23fbf90d2";
+
 setTimeout(function(){
   $('.inputWrapper').addClass('ready');
   $('#request').focus().keypress(function(e) {
@@ -58,7 +60,7 @@ StarParticle.prototype.submitToFields = function(fields){
         this.sprite.alpha = 0;
         if (bg.input) this.locked = true,particlesDone++;
        }
-       else if (distance > 55 && bg.outPut)
+       else if (distance > 65 && bg.outPut)
        {
          if (this.sprite.alpha === 0) this.sprite.alpha = 1;
        }
@@ -75,6 +77,34 @@ StarParticle.prototype.submitToFields = function(fields){
      this.velocity.add(this.acceleration);
       // Add our current velocity to our position
      this.position.add(this.velocity);
+
+     if (bg.outPut)
+     {
+        var distance = this.position.getDistance(new Vector(cw/2,ch/2));
+        if (!this.initialDistance) this.initialDistance = cw/2;
+        if (!this.maxScale) this.maxScale = Math.random()*0.3+0.2;
+        //var scale = ((cw/2)/(cw/2)-distance);
+        var scale = Math.max(0.1,this.maxScale*(distance)/this.initialDistance);
+        if (scale > 3 || scale < 0 || isNaN(scale) || typeof scale != "number") scale = 0.1;
+        //console.log(scale);
+        this.sprite.scale.set(Math.max(scale,0.1));
+     }
+
+     var margin = 70;
+     if (bg.outPut && (this.position.x > cw+margin || this.position.x < 0-margin || this.position.y > ch+margin || this.position.y < 0-margin))
+     {
+        //Out of bounds
+        if (particles.length < 200)
+        {
+           this.reset();
+        }
+        else
+        {
+            //Delete from particle array.
+            particles.splice(particles.indexOf(this),1);
+            container.removeChild(this.sprite);
+        }
+     }
 };
 
 var mainhole = new Field(new Vector(cw/2, ch/2), 440);
@@ -125,6 +155,7 @@ butterfly.putButterfly();
 //go('Hello');
 
 function go(keyword){
+  api = new Api(keyword);
   $('.infoWrapper').text('Checking connectivity').removeClass('hidden');
   bg.prepare(keyword);
   bg.setupParticles();
@@ -203,6 +234,12 @@ function animate()
   renderer.render(stage);
   stats.end();
 }
+
+
+//
+//
+//
+//unlockParticles();
 
 
 function animateBg()
@@ -287,6 +324,17 @@ function checkStep2Done()
   }, 500);
 }
 
+function unlockParticles()
+{
+  mainhole.setMass(1);
+  bg.outPut = true;
+  bg.input = false;
+  particles.forEach(function(p){
+    p.locked = false;
+  });
+  container.addChild(bhGraphics);
+}
+
 function checkStep3Done()
 {
   setTimeout(function(){
@@ -298,12 +346,7 @@ function checkStep3Done()
     {
       console.log('Step3 Ended');
       animCallBack('Extracting Infos').done(function(){
-        mainhole.setMass(1);
-        bg.outPut = true;
-        bg.input = false;
-        particles.forEach(function(p){
-          p.locked = false;
-        });
+        unlockParticles();
       });
 
 
