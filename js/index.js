@@ -297,7 +297,16 @@ function checkStep3Done()
     else
     {
       console.log('Step3 Ended');
-      animCallBack('Extracting Infos');
+      animCallBack('Extracting Infos').done(function(){
+        mainhole.setMass(1);
+        bg.outPut = true;
+        bg.input = false;
+        particles.forEach(function(p){
+          p.locked = false;
+        });
+      });
+
+
       //
     }
   }, 500);
