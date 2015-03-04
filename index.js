@@ -4,3 +4,4 @@
   app.use(express.static('js'));
   app.use(express.static('assets'));
   app.listen(process.env.PORT || 4001);
+  console.log('Server Started.');

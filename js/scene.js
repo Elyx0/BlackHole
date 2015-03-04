@@ -33,7 +33,7 @@ Scene.prototype.drawButterfly = function()
 {
   this.context.drawImage(this.img,0,0,this.img.width,this.img.height);
   this.resolution = 6;
-  this.setupParticles(true);
+  //this.setupParticles(true);
 };
 
 Scene.prototype.prepare = function (keyword)
@@ -51,17 +51,18 @@ Scene.prototype.prepare = function (keyword)
   }
   ctx.clearRect(0,0,cw,ch);
   measure.height = FontMetric(font,fontSize)[1];
-  for (;measure.height > canvas.h;fontSize-=5){
+  for (;measure.height > canvas.h/2;fontSize-=5){
   var r = FontMetric(font,fontSize,keyword);
   measure.height = r[0]-(r[2]/1.2);
   }
+  // if (fontSize > )
   ctx.font = fontSize + "px '"+font+"'";
   measure.width = ctx.measureText(keyword).width;
   var r = FontMetric(font,fontSize,keyword);
   measure.height = r[0]-(r[2]/1.2);
   //End of stupid bullshit
   //
-  resolution = ~~((cw / measure.width + ch/ measure.height) + keyword.length/5 + 1);
+  resolution = ~~((cw / measure.width + ch/ measure.height) + keyword.length/5 + 3);
   this.resolution = resolution;
   //resolution = 30;
   console.log(measure,resolution,FontMetric(font,fontSize,keyword));
@@ -94,28 +95,35 @@ Scene.prototype.setupParticles = function (getTint)
       {
         if(index >= particles.length)
         {
-          if (getTint)
-          {
-            var rgba = [imageData.data[i],imageData.data[i+1],imageData.data[i+2]];
-            //debugger;
-            new ButterflyParticle(x,y,rgba);
-          }
+
           // Means our butterfly doesn't have enough particles :( ? what to do.
-          else
-          {
-            var rParticle = particles[~~(Math.random()*particles.length)];
-            new ButterflyParticle(rParticle.initialX,rParticle.y,rParticle.rgba);
-            particles[index].homeX=x;
-            particles[index].homeY=y;
-          }
+          // else
+          // {
+          //   var rParticle = particles[~~(Math.random()*particles.length)];
+          //   new ButterflyParticle(rParticle.initialX,rParticle.y,rParticle.rgba);
+          //   particles[index].homeX=x;
+          //   particles[index].homeY=y;
+          // }
 
         }
         else
         {
          //debugger;
-         particles[index].homeX=x;
-         particles[index].homeY=y;
+
+         if (getTint)
+         {
+          particles[index].destination = new Vector(x + bg.canvas.width/2 - butterfly.canvas.width/2,y+100);
+
+           var rgba = [imageData.data[i],imageData.data[i+1],imageData.data[i+2]];
+           particles[index].rgba = rgba;
+           particles[index].desiredTint = '0x' + rgbToHex.apply(0,rgba);
+         }
+         else
+         {
+          particles[index].destination = new Vector(x,y);
+         }
         }
+
         index++;
       }
     }

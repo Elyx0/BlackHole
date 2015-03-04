@@ -36,6 +36,49 @@ body {
     margin:0;
     padding:0;
     background:black;
+    cursor: pointer !important;
+    .infoWrapper
+    {
+        font-size: 16px;
+        padding-top: 12px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.9);
+        font-family: Lato;
+        padding-top: 12px;
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        height: 47px;
+        text-align: center;
+        background: rgba(0,0,0,0.4);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        transition: all 0.5s ease-in-out;
+        &.hidden
+        {
+            color:black;
+            top:-47px;
+        }
+    }
+    .topWrapper
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 45px;
+        z-index: 100;
+        border-bottom: 1px solid rgba(255,255,255,0.5);
+    }
+    .bottomWrapper
+    {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 45px;
+        z-index: 100;
+        border-top: 1px solid rgba(255,255,255,0.5);
+    }
     .bodywrapper
     {
         position:absolute;
@@ -53,9 +96,11 @@ body {
         left: 0;
         right: 0;
         bottom: 0;
-        background: #07121b url(http://www.amrzek.com/space.png) repeat 0px 0px;
-        animation: space 60s linear infinite;
+        background: #07121b url(space.jpeg) repeat 0px 0px;
+        //animation: space 1500s linear infinite;
         transition: all 1s ease-in-out;
+        filter: brightness(.8);
+        opacity: 0.9;
     }
     &.go
     {

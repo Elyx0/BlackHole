@@ -49,7 +49,43 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background: black; }
+  background: black;
+  cursor: pointer !important; }
+  body .infoWrapper {
+    font-size: 16px;
+    padding-top: 12px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: Lato;
+    padding-top: 12px;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 47px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out; }
+    body .infoWrapper.hidden {
+      color: black;
+      top: -47px; }
+  body .topWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
+  body .bottomWrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+    z-index: 100;
+    border-top: 1px solid rgba(255, 255, 255, 0.5); }
   body .bodywrapper {
     position: absolute; }
   body #bg, body #butterfly {
@@ -61,11 +97,12 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #07121b url(http://www.amrzek.com/space.png) repeat 0px 0px;
-    -webkit-animation: space 60s linear infinite;
-            animation: space 60s linear infinite;
+    background: #07121b url(space.jpeg) repeat 0px 0px;
     -webkit-transition: all 1s ease-in-out;
-            transition: all 1s ease-in-out; }
+            transition: all 1s ease-in-out;
+    -webkit-filter: brightness(.8);
+            filter: brightness(.8);
+    opacity: 0.9; }
   body.go .starsWrapper {
     opacity: 0; }
   body .inputWrapper {
