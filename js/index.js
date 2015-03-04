@@ -55,7 +55,7 @@ StarParticle.prototype.submitToFields = function(fields){
        var vectorY = field.position.y - this.position.y;
        var distanceVector = new Vector(vectorX,vectorY);
        var distance = distanceVector.getMagnitude();
-       if (distance < 50)
+       if (distance < 50 && !field.dontHideParticles)
        {
         this.sprite.alpha = 0;
         if (bg.input) this.locked = true,particlesDone++;
@@ -110,28 +110,12 @@ StarParticle.prototype.submitToFields = function(fields){
 var mainhole = new Field(new Vector(cw/2, ch/2), 440);
 var fields = [mainhole];
 
-
-function drawBlackhole()
-{
-  bhGraphics = new PIXI.Graphics();
-  bhGraphics.lineStyle ( 2 , 0x000000,  1);
-  bhGraphics.beginFill('0x000000');
-  bhGraphics.drawCircle(cw/2, ch/2, 50);
-  bhSprite = new PIXI.Sprite(particleTexture);
-  bhSprite.anchor.set(0.5);
-  bhSprite.scale.set(3);
-  bhSprite.alpha = 0.3;
-  bhSprite.tint = '0x' + rgbToHex(255,184,0);
-  bhSprite.position.x = cw/2;
-  bhSprite.position.y = ch/2;
-  container.addChild(bhSprite);
-  container.addChild(bhGraphics);
-}
-
 drawBlackhole();
 
 //Create background
-for (var i =0;i<4226;i++)
+var maxParticles = 4226;
+maxParticles = 200;
+for (var i =0;i<maxParticles;i++)
 {
   new StarParticle();
 }
@@ -151,6 +135,61 @@ bg.init();
 var butterfly = new Scene('butterfly');
 butterfly.init(532,606);
 butterfly.putButterfly();
+
+
+for (var i =0;i<particles.length;i++)
+{
+  var p = particles[i];
+  p.reset();
+}
+unlockParticles();
+
+words = [];
+function WordField(word)
+{
+  this.word = word;
+  this.color = "orange";
+  this.reset();
+  var text = new PIXI.Text(word, {font: this.fontSize + "px Lato", fill: this.color});
+  text.anchor.set(0.5);
+  text.position = this.position;
+  this.sprite = text;
+  this.field = new Field(this.position, this.fontSize);
+  this.field.dontHideParticles = true;
+  fields.push(this.field);
+
+  container.addChild(text);
+  words.push(this);
+}
+WordField.prototype.move = function()
+{
+   var acceleration = this.velocity;
+   this.position.add(acceleration);
+   //this.updateField();
+};
+WordField.prototype.reset = function()
+{
+  var wCoef = Math.random() > 0.5 ? -1 : 1;
+  var hCoef = Math.random() > 0.5 ? -1 : 1;
+  this.velocity = new Vector(wCoef*(Math.random()+0.1),hCoef*(Math.random()+0.1));
+  this.position = new Vector(cw/2+wCoef*(Math.random()*20+10),ch/2+hCoef*(Math.random()*20+10));
+  this.fontSize = 10;
+};
+WordField.prototype.updateField = function()
+{
+  this.field.position = new Field(new Vector(this.sprite.position.x, this.sprite.position.y), -this.fontSize);
+};
+WordField.prototype.updateText = function()
+{
+  this.sprite.style.font = this.fontSize + "px Lato";
+  this.sprite.updateText();
+};
+
+var apiData;
+$.getJSON('sample.json',function(data){
+ apiData = data;
+
+});
 
 //go('Hello');
 
@@ -224,6 +263,14 @@ function animate()
       var p = particles[i];
       p.submitToFields(fields);
     }
+    if (bg.outPut)
+    {
+      for(var i=0;i<words.length;i++)
+      {
+        var w = words[i];
+        w.move();
+      }
+    }
   }
 
 
@@ -235,12 +282,22 @@ function animate()
   stats.end();
 }
 
-
-//
-//
-//
-//unlockParticles();
-
+function drawBlackhole()
+{
+  bhGraphics = new PIXI.Graphics();
+  bhGraphics.lineStyle ( 2 , 0x000000,  1);
+  bhGraphics.beginFill('0x000000');
+  bhGraphics.drawCircle(cw/2, ch/2, 50);
+  bhSprite = new PIXI.Sprite(particleTexture);
+  bhSprite.anchor.set(0.5);
+  bhSprite.scale.set(3);
+  bhSprite.alpha = 0.3;
+  bhSprite.tint = '0x' + rgbToHex(255,184,0);
+  bhSprite.position.x = cw/2;
+  bhSprite.position.y = ch/2;
+  container.addChild(bhSprite);
+  container.addChild(bhGraphics);
+}
 
 function animateBg()
 {
