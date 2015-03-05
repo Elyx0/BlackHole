@@ -144,11 +144,11 @@ butterfly.putButterfly();
 //   p.reset();
 // }
 // unlockParticles();
-var apiData;
-$.getJSON('sample.json',function(data){
- apiData = data;
-   parseData(apiData);
-});
+// var apiData;
+// $.getJSON('sample.json',function(data){
+//  apiData = data;
+//    parseData(apiData);
+// });
 
 currentInterval = 0;
 clusters = [];
