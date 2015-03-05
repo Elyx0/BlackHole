@@ -114,7 +114,7 @@ drawBlackhole();
 
 //Create background
 var maxParticles = 4226;
-maxParticles = 200;
+//maxParticles = 200;
 for (var i =0;i<maxParticles;i++)
 {
   new StarParticle();
@@ -137,15 +137,15 @@ butterfly.init(532,606);
 butterfly.putButterfly();
 
 
-for (var i =0;i<particles.length;i++)
-{
-  var p = particles[i];
-  p.reset();
-}
-unlockParticles();
+// for (var i =0;i<particles.length;i++)
+// {
+//   var p = particles[i];
+//   p.reset();
+// }
+// unlockParticles();
 
 words = [];
-function WordField(word)
+function WordField(word,maxSize)
 {
   this.word = word;
   this.color = "orange";
@@ -157,6 +157,7 @@ function WordField(word)
   this.field = new Field(this.position, this.fontSize);
   this.field.dontHideParticles = true;
   fields.push(this.field);
+  this.maxSize = maxSize;
 
   container.addChild(text);
   words.push(this);
@@ -166,19 +167,31 @@ WordField.prototype.move = function()
    var acceleration = this.velocity;
    this.position.add(acceleration);
    //this.updateField();
+
+
+
+   var distance = this.position.getDistance(new Vector(cw/2,ch/2));
+   if (!this.initialDistance) this.initialDistance = cw/2;
+   //var scale = ((cw/2)/(cw/2)-distance);
+   var scale = Math.max(10,this.maxSize*(distance)/this.initialDistance);
+   if (scale > this.maxSize || scale < 0 || isNaN(scale) || typeof scale != "number") scale = 10;
+   //console.log(scale);
+   this.fontSize = Math.max(scale,10);
+   this.updateText();
+   this.field.mass = scale;
 };
 WordField.prototype.reset = function()
 {
   var wCoef = Math.random() > 0.5 ? -1 : 1;
   var hCoef = Math.random() > 0.5 ? -1 : 1;
-  this.velocity = new Vector(wCoef*(Math.random()+0.1),hCoef*(Math.random()+0.1));
+  this.velocity = new Vector(wCoef*(Math.random()+0.01),hCoef*(Math.random()+0.01));
   this.position = new Vector(cw/2+wCoef*(Math.random()*20+10),ch/2+hCoef*(Math.random()*20+10));
   this.fontSize = 10;
 };
-WordField.prototype.updateField = function()
-{
-  this.field.position = new Field(new Vector(this.sprite.position.x, this.sprite.position.y), -this.fontSize);
-};
+// WordField.prototype.updateField = function()
+// {
+//   this.field.position = new Field(new Vector(this.sprite.position.x, this.sprite.position.y), -this.fontSize*500);
+// };
 WordField.prototype.updateText = function()
 {
   this.sprite.style.font = this.fontSize + "px Lato";
