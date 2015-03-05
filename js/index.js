@@ -115,6 +115,7 @@ drawBlackhole();
 //Create background
 var maxParticles = 4226;
 //maxParticles = 200;
+//maxParticles = 1;
 for (var i =0;i<maxParticles;i++)
 {
   new StarParticle();
@@ -136,19 +137,31 @@ var butterfly = new Scene('butterfly');
 butterfly.init(532,606);
 butterfly.putButterfly();
 
-
+//UNCOMMENT BEHIND + REDUCE MAX PARTICLES
 // for (var i =0;i<particles.length;i++)
 // {
 //   var p = particles[i];
 //   p.reset();
 // }
 // unlockParticles();
+var apiData;
+$.getJSON('sample.json',function(data){
+ apiData = data;
+   parseData(apiData);
+});
+
+currentInterval = 0;
+clusters = [];
+maxClusterSize = 90;
+
 
 words = [];
-function WordField(word,maxSize)
+function WordField(word,maxSize,cluster)
 {
+  this.cluster = cluster;
   this.word = word;
-  this.color = "orange";
+  this.isCluster = this.isWordACluster();
+  this.color = this.isCluster ? "orange" : "white";
   this.reset();
   var text = new PIXI.Text(word, {font: this.fontSize + "px Lato", fill: this.color});
   text.anchor.set(0.5);
@@ -164,6 +177,7 @@ function WordField(word,maxSize)
 }
 WordField.prototype.move = function()
 {
+   if (this.locked) return;
    var acceleration = this.velocity;
    this.position.add(acceleration);
    //this.updateField();
@@ -171,22 +185,78 @@ WordField.prototype.move = function()
 
 
    var distance = this.position.getDistance(new Vector(cw/2,ch/2));
-   if (!this.initialDistance) this.initialDistance = cw/2;
+   //console.log(distance);
+   if (distance > cw/4*0.8 && this.isCluster && !this.noLock)this.locked = true, this.cluster.loadCorrelated();
+
+
+   if (!this.initialDistance) this.initialDistance = cw/4;
    //var scale = ((cw/2)/(cw/2)-distance);
-   var scale = Math.max(10,this.maxSize*(distance)/this.initialDistance);
-   if (scale > this.maxSize || scale < 0 || isNaN(scale) || typeof scale != "number") scale = 10;
+   var scale = this.maxSize*(distance)/this.initialDistance;
+   //if (scale > this.maxSize || scale < 0 || isNaN(scale) || typeof scale != "number") scale = 10;
    //console.log(scale);
-   this.fontSize = Math.max(scale,10);
+   this.fontSize = Math.min(scale,this.maxSize);
    this.updateText();
    this.field.mass = scale;
+
+   var margin = 100;
+   if (this.position.x > cw+margin || this.position.x < 0-margin || this.position.y > ch+margin || this.position.y < 0-margin)
+   {
+      if (this.isCluster)
+      {
+        //Delete from clusters array
+        //Delete all children sprite + self sprite.
+        return;
+      }
+      //Out of bounds.
+      this.cluster.doneCorrelated--;
+      if (this.cluster.doneCorrelated <= 0)
+      {
+        console.log(this.cluster,'ENDED->next interval');
+        if (!this.cluster.wordField.noLock)
+        {
+          this.cluster.wordField.noLock = true;
+          this.cluster.wordField.locked = false;
+        }
+        this.locked = true;
+
+      }
+   }
 };
+WordField.prototype.isWordACluster = function()
+{
+  //debugger;
+  return this.cluster.name == this.word;
+}
 WordField.prototype.reset = function()
 {
   var wCoef = Math.random() > 0.5 ? -1 : 1;
   var hCoef = Math.random() > 0.5 ? -1 : 1;
-  this.velocity = new Vector(wCoef*(Math.random()+0.01),hCoef*(Math.random()+0.01));
+  if (this.isCluster)
+  {
+    var id = clusters.length % 3;
+    if (id == 0)
+    {
+      this.velocity = new Vector(Math.random()/2+0.05,Math.random()/2+0.05);
+    }
+    if (id == 1)
+    {
+      this.velocity = new Vector(-(Math.random()/2+0.05),-(Math.random()/2+0.05));
+    }
+    if (id == 2)
+    {
+      this.velocity = new Vector(Math.random()/2+0.05,-(Math.random()/2+0.05));
+    }
+    console.log(id,this.velocity,this);
+  }
+  else
+  {
+    //random this.velocity = new Vector(wCoef*(Math.random()/2+0.05),hCoef*(Math.random()/2+0.05));
+    this.velocity = this.cluster.wordField.velocity.clone();
+    this.velocity.addScalar((Math.random()-0.5)/10);
+  }
+
   this.position = new Vector(cw/2+wCoef*(Math.random()*20+10),ch/2+hCoef*(Math.random()*20+10));
-  this.fontSize = 10;
+  this.fontSize = 1;
 };
 // WordField.prototype.updateField = function()
 // {
@@ -198,11 +268,50 @@ WordField.prototype.updateText = function()
   this.sprite.updateText();
 };
 
-var apiData;
-$.getJSON('sample.json',function(data){
- apiData = data;
 
-});
+function parseData(apiData)
+{
+  intervals = apiData[1].children;
+  intervals[currentInterval].children[1].children.slice(0,3).forEach(function(cluster,index){
+    var name = cluster.name.split('cluster ')[1];
+    setTimeout(function(){
+      new Cluster(name,cluster);
+    },index*2000);
+    
+  });
+}
+
+
+function Cluster(name,cluster)
+{
+   this.name = name;
+   this.cluster = cluster;
+   this.children = this.cluster.children.slice(0,10);
+   this.weight = maxClusterSize/(clusters.length+1);
+   this.wordField = new WordField(name,this.weight,this);
+   clusters.push(this);
+}
+
+Cluster.prototype.loadCorrelated = function()
+{
+   console.log('Loading correlated for',this.name,this.children.length);
+   this.doneCorrelated = this.children.length;
+   for (var i=0;i<this.children.length;i++)
+   {
+     this.doTimeout(this,i);
+   }
+};
+
+Cluster.prototype.doTimeout = function(that,i)
+{
+  //console.log(i,'i');
+  setTimeout(function(){
+    var c = that.children[i];
+    c.wordField = new WordField(c.name,that.weight/2+(that.weight*c.keyword_count/100),that);
+    
+  },i*1500);
+};
+
 
 //go('Hello');
 
@@ -417,6 +526,9 @@ function checkStep3Done()
       console.log('Step3 Ended');
       animCallBack('Extracting Infos').done(function(){
         unlockParticles();
+        setTimeout(function(){
+          parseData(api.data);
+        },2000);
       });
 
 

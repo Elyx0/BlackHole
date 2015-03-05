@@ -11,6 +11,12 @@ Vector.prototype.add = function(vector)
     this.y += vector.y;
 };
 
+Vector.prototype.addScalar = function(nb)
+{
+    this.x += nb;
+    this.y += nb;
+};
+
 
 Vector.prototype.set = function(nb)
 {
@@ -18,6 +24,10 @@ Vector.prototype.set = function(nb)
     this.y = nb;
 };
 
+Vector.prototype.clone = function()
+{
+    return new Vector(this.x,this.y);
+}
 
 
 Vector.prototype.mult = function(number)
