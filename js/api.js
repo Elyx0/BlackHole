@@ -7,7 +7,7 @@ var Api = function (word)
 Api.prototype.setup = function ()
 {
     var that = this;
-    $.getJSON('http://api.keywordmeme.com/v1/fetch?api_token=' + token + '&interval_records=100&q=' + this.word, function (data)
+    $.getJSON('http://api.keywordmeme.com/v1/fetch?api_token=' + token + '&q=' + this.word, function (data)
     {
         console.log(data);
         that.query_token = data.query_token;
