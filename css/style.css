@@ -51,6 +51,16 @@ body {
   padding: 0;
   background: black;
   cursor: pointer !important; }
+  body .branding {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    color: white;
+    font-family: Lato;
+    font-size: 10px;
+    opacity: 0.8; }
+    body .branding b {
+      color: orange; }
   body .infoWrapper {
     font-size: 16px;
     padding-top: 12px;

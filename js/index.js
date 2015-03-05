@@ -207,22 +207,59 @@ WordField.prototype.move = function()
    {
       console.log(this,this.position,'OUT');
       this.locked = true;
+
+      //Cleaning word and field.
+      container.removeChild(this.text);
+      fields.splice(fields.indexOf(this.field),1);
+      words.splice(words.indexOf(this),1);
+
+
       if (this.isCluster)
       {
         //Delete from clusters array
         //Delete all children sprite + self sprite.
+        var next = this.cluster.findNext();
+        if (next)
+        {
+          this.locked = false;
+          this.cluster.noLock = false;
+          this.cluster.newFrom(next);
+        }
+        else
+        {
+          if (!words.length)
+          {
+            animCallBack('Data Fetching Ended').done(function(){
+              setTimeout(function(){
+                document.location.reload();
+              },2000);
+            });
+          }
+        }
         return;
       }
       //Out of bounds.
+
+
+
       this.cluster.doneCorrelated--;
-      if (this.cluster.doneCorrelated <= 0 && !this.cluster.wordField.noLock)
+      if (this.cluster.doneCorrelated === 0 && !this.cluster.wordField.noLock)
       {
+        this.cluster.doneCorrelated--;
         console.log(this.cluster,'ENDED->next interval');
-        if (!this.cluster.wordField.noLock)
+        var nextCluster = this.cluster.isInNextInterval();
+        if (nextCluster)
         {
-          //debugger;
-          this.cluster.wordField.noLock = true;
-          this.cluster.wordField.locked = false;
+          this.cluster.resetWith(nextCluster);
+        }
+        else
+        {
+          if (!this.cluster.wordField.noLock)
+          {
+            //debugger;
+            this.cluster.wordField.noLock = true;
+            this.cluster.wordField.locked = false;
+          }
         }
       }
    }
@@ -238,7 +275,8 @@ WordField.prototype.reset = function()
   var hCoef = Math.random() > 0.5 ? -1 : 1;
   if (this.isCluster)
   {
-    var id = clusters.length % 3;
+    var oldCluster = clusters.indexOf(this.cluster);
+    var id = oldCluster > -1 ? oldCluster : clusters.length % 3;
     if (id === 0)
     {
       this.velocity = new Vector(Math.random()/2+0.05,Math.random()/2+0.05);
@@ -297,20 +335,55 @@ function Cluster(name,cluster,intervalNb)
    this.reset();
    clusters.push(this);
 }
-Cluster.prototype.reset = function()
+Cluster.prototype.reset = function(keepweight)
 {
   this.children = this.cluster.children.slice(0,5);
-  this.weight = maxClusterSize/(clusters.length+1);
+  if (!keepweight)
+  {
+    this.weight = maxClusterSize/(clusters.length+1);
+  }
   this.wordField = new WordField(this.name,this.weight,this);
 };
 
+Cluster.prototype.resetWith = function(cluster)
+{
+   this.name = cluster.name.split('cluster ')[1];
+   this.cluster = cluster;
+   this.children = cluster.children.slice(0,5);
+   this.loadCorrelated();
+};
 Cluster.prototype.isInNextInterval = function()
 {
+    this.currentInterval++;
     var clusterName = this.name;
-    var potentialCluster = intervals[currentInterval+1].children[1].children.slice(0,3).filter(function(cluster,index){
+    var next = this.currentInterval;
+    if (!intervals[next]) return false;
+    var potentialCluster = intervals[next].children[1].children.slice(0,3).filter(function(cluster){
         var name = cluster.name.split('cluster ')[1];
         return name == clusterName;
       });
+    if (!potentialCluster.length) return false;
+    return potentialCluster[0];
+};
+
+Cluster.prototype.findNext = function()
+{
+    //Interval got already upgraded
+    var next = this.currentInterval;
+    var list = clusters.map(function(c){return c.name;});
+    if (!intervals[next]) return false;
+    var potentialCluster = intervals[next].children[1].children.slice(0,3).filter(function(cluster){
+        var name = cluster.name.split('cluster ')[1];
+        return list.indexOf(name) == -1;
+      });
+    if (!potentialCluster.length) return false;
+    return potentialCluster[0];
+};
+
+Cluster.prototype.newFrom = function(newCluster)
+{
+    this.name = newCluster.name.split('cluster ')[1];
+    this.reset(true);
 };
 
 Cluster.prototype.loadCorrelated = function()
