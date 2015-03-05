@@ -220,7 +220,7 @@ WordField.prototype.move = function()
         console.log(this.cluster,'ENDED->next interval');
         if (!this.cluster.wordField.noLock)
         {
-          debugger;
+          //debugger;
           this.cluster.wordField.noLock = true;
           this.cluster.wordField.locked = false;
         }
@@ -239,7 +239,7 @@ WordField.prototype.reset = function()
   if (this.isCluster)
   {
     var id = clusters.length % 3;
-    if (id == 0)
+    if (id === 0)
     {
       this.velocity = new Vector(Math.random()/2+0.05,Math.random()/2+0.05);
     }
@@ -288,6 +288,7 @@ function parseData(apiData)
 
 
 
+
 function Cluster(name,cluster,intervalNb)
 {
    this.currentInterval = intervalNb;
@@ -300,7 +301,7 @@ Cluster.prototype.reset = function()
 {
   this.children = this.cluster.children.slice(0,5);
   this.weight = maxClusterSize/(clusters.length+1);
-  this.wordField = new WordField(name,this.weight,this);
+  this.wordField = new WordField(this.name,this.weight,this);
 };
 
 Cluster.prototype.isInNextInterval = function()
