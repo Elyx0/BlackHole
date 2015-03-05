@@ -524,7 +524,7 @@ function checkStep2Done()
     else
     {
       console.log('Step2 Ended');
-      animCallBack('Merging Clusters Data');
+      animCallBack('Merging Cluster Data');
       bg.ready = false;
       bg.input = true;
       //bg.outPut = true;
@@ -556,7 +556,7 @@ function checkStep3Done()
     else
     {
       console.log('Step3 Ended');
-      animCallBack('Extracting Infos').done(function(){
+      animCallBack('Extracting Info').done(function(){
         unlockParticles();
         setTimeout(function(){
           parseData(api.data);
