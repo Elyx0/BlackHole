@@ -94,7 +94,7 @@ StarParticle.prototype.submitToFields = function(fields){
      if (bg.outPut && (this.position.x > cw+margin || this.position.x < 0-margin || this.position.y > ch+margin || this.position.y < 0-margin))
      {
         //Out of bounds
-        if (particles.length < 200)
+        if (particles.length < 10)
         {
            this.reset();
         }
@@ -112,14 +112,7 @@ var fields = [mainhole];
 
 drawBlackhole();
 
-//Create background
-var maxParticles = 4226;
-//maxParticles = 200;
-//maxParticles = 1;
-for (var i =0;i<maxParticles;i++)
-{
-  new StarParticle();
-}
+
 
 // var text = new PIXI.Text("Pixi.js can has text!", {font:"50px Arial", fill:"red"});
 // stage.addChild(text);
@@ -137,7 +130,18 @@ var butterfly = new Scene('butterfly');
 butterfly.init(532,606);
 butterfly.putButterfly();
 
+//Create background
+var maxParticles = 4226;
+//maxParticles = 10;
+//maxParticles = 1;
+for (var i =0;i<maxParticles;i++)
+{
+  new StarParticle();
+}
+
 //UNCOMMENT BEHIND + REDUCE MAX PARTICLES
+
+
 // for (var i =0;i<particles.length;i++)
 // {
 //   var p = particles[i];
@@ -198,9 +202,11 @@ WordField.prototype.move = function()
    this.updateText();
    this.field.mass = scale;
 
-   var margin = 100;
+   var margin = Math.max(this.sprite.height/2,this.sprite.width/2);
    if (this.position.x > cw+margin || this.position.x < 0-margin || this.position.y > ch+margin || this.position.y < 0-margin)
    {
+      console.log(this,this.position,'OUT');
+      this.locked = true;
       if (this.isCluster)
       {
         //Delete from clusters array
@@ -209,16 +215,15 @@ WordField.prototype.move = function()
       }
       //Out of bounds.
       this.cluster.doneCorrelated--;
-      if (this.cluster.doneCorrelated <= 0)
+      if (this.cluster.doneCorrelated <= 0 && !this.cluster.wordField.noLock)
       {
         console.log(this.cluster,'ENDED->next interval');
         if (!this.cluster.wordField.noLock)
         {
+          debugger;
           this.cluster.wordField.noLock = true;
           this.cluster.wordField.locked = false;
         }
-        this.locked = true;
-
       }
    }
 };
@@ -226,7 +231,7 @@ WordField.prototype.isWordACluster = function()
 {
   //debugger;
   return this.cluster.name == this.word;
-}
+};
 WordField.prototype.reset = function()
 {
   var wCoef = Math.random() > 0.5 ? -1 : 1;
@@ -252,7 +257,7 @@ WordField.prototype.reset = function()
   {
     //random this.velocity = new Vector(wCoef*(Math.random()/2+0.05),hCoef*(Math.random()/2+0.05));
     this.velocity = this.cluster.wordField.velocity.clone();
-    this.velocity.addScalar((Math.random()-0.5)/10);
+    this.velocity.mult(1.05);
   }
 
   this.position = new Vector(cw/2+wCoef*(Math.random()*20+10),ch/2+hCoef*(Math.random()*20+10));
@@ -275,22 +280,37 @@ function parseData(apiData)
   intervals[currentInterval].children[1].children.slice(0,3).forEach(function(cluster,index){
     var name = cluster.name.split('cluster ')[1];
     setTimeout(function(){
-      new Cluster(name,cluster);
+      new Cluster(name,cluster,currentInterval);
     },index*2000);
-    
+
   });
 }
 
 
-function Cluster(name,cluster)
+
+function Cluster(name,cluster,intervalNb)
 {
+   this.currentInterval = intervalNb;
    this.name = name;
    this.cluster = cluster;
-   this.children = this.cluster.children.slice(0,10);
-   this.weight = maxClusterSize/(clusters.length+1);
-   this.wordField = new WordField(name,this.weight,this);
+   this.reset();
    clusters.push(this);
 }
+Cluster.prototype.reset = function()
+{
+  this.children = this.cluster.children.slice(0,5);
+  this.weight = maxClusterSize/(clusters.length+1);
+  this.wordField = new WordField(name,this.weight,this);
+};
+
+Cluster.prototype.isInNextInterval = function()
+{
+    var clusterName = this.name;
+    var potentialCluster = intervals[currentInterval+1].children[1].children.slice(0,3).filter(function(cluster,index){
+        var name = cluster.name.split('cluster ')[1];
+        return name == clusterName;
+      });
+};
 
 Cluster.prototype.loadCorrelated = function()
 {
@@ -308,8 +328,8 @@ Cluster.prototype.doTimeout = function(that,i)
   setTimeout(function(){
     var c = that.children[i];
     c.wordField = new WordField(c.name,that.weight/2+(that.weight*c.keyword_count/100),that);
-    
-  },i*1500);
+
+  },i*3000);
 };
 
 
@@ -528,6 +548,7 @@ function checkStep3Done()
         unlockParticles();
         setTimeout(function(){
           parseData(api.data);
+          animCallBack('Done processing ' + api.data[0].message.split(' ')[3] + ' clusters for ' + api.data[0].term);
         },2000);
       });
 
