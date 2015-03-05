@@ -231,8 +231,10 @@ WordField.prototype.move = function()
           {
             animCallBack('Data Fetching Ended').done(function(){
               setTimeout(function(){
-                document.location.reload();
-              },2000);
+                  $('.bodywrapper').animate({opacity:0},2000,function(){
+                    document.location.reload();
+                  });
+                },4000);
             });
           }
         }
