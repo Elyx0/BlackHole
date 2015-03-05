@@ -24,8 +24,10 @@ setTimeout(function(){
 
 var stage = new PIXI.Stage();
 var container = new PIXI.DisplayObjectContainer();
+var wordsContainer = new PIXI.DisplayObjectContainer();
 //var container = new PIXI.SpriteBatch();
 stage.addChild(container);
+stage.addChild(wordsContainer);
 var cw = document.body.clientWidth;
 var ch = document.body.clientHeight;
 var wrapper = document.getElementsByClassName('canvasWrapper')[0];
@@ -40,72 +42,6 @@ var butterflyParticles = [];
 var particlesDone = 0;
 
 
-
-StarParticle.prototype.submitToFields = function(fields){
-  if (this.locked) return;
-  // our starting acceleration this frame
-    var totalAccelerationX = 0;
-    var totalAccelerationY = 0;
-   // for each passed field
-     for (var i = 0; i < fields.length; i++) {
-       var field = fields[i];
-
-       // find the distance between the particle and the field
-       var vectorX = field.position.x - this.position.x;
-       var vectorY = field.position.y - this.position.y;
-       var distanceVector = new Vector(vectorX,vectorY);
-       var distance = distanceVector.getMagnitude();
-       if (distance < 50 && !field.dontHideParticles)
-       {
-        this.sprite.alpha = 0;
-        if (bg.input) this.locked = true,particlesDone++;
-       }
-       else if (distance > 65 && bg.outPut)
-       {
-         if (this.sprite.alpha === 0) this.sprite.alpha = 1;
-       }
-       // calculate the force via MAGIC and HIGH SCHOOL SCIENCE!
-       var force = field.mass / Math.pow(vectorX*vectorX+vectorY*vectorY,1.5);
-
-       // add to the total acceleration the force adjusted by distance
-       totalAccelerationX += vectorX * force;
-       totalAccelerationY += vectorY * force;
-     }
-
-     // update our particle's acceleration
-     this.acceleration = new Vector(totalAccelerationX, totalAccelerationY);
-     this.velocity.add(this.acceleration);
-      // Add our current velocity to our position
-     this.position.add(this.velocity);
-
-     if (bg.outPut)
-     {
-        var distance = this.position.getDistance(new Vector(cw/2,ch/2));
-        if (!this.initialDistance) this.initialDistance = cw/2;
-        if (!this.maxScale) this.maxScale = Math.random()*0.3+0.2;
-        //var scale = ((cw/2)/(cw/2)-distance);
-        var scale = Math.max(0.1,this.maxScale*(distance)/this.initialDistance);
-        if (scale > 3 || scale < 0 || isNaN(scale) || typeof scale != "number") scale = 0.1;
-        //console.log(scale);
-        this.sprite.scale.set(Math.max(scale,0.1));
-     }
-
-     var margin = 70;
-     if (bg.outPut && (this.position.x > cw+margin || this.position.x < 0-margin || this.position.y > ch+margin || this.position.y < 0-margin))
-     {
-        //Out of bounds
-        if (particles.length < 10)
-        {
-           this.reset();
-        }
-        else
-        {
-            //Delete from particle array.
-            particles.splice(particles.indexOf(this),1);
-            container.removeChild(this.sprite);
-        }
-     }
-};
 
 var mainhole = new Field(new Vector(cw/2, ch/2), 440);
 var fields = [mainhole];
@@ -176,7 +112,7 @@ function WordField(word,maxSize,cluster)
   fields.push(this.field);
   this.maxSize = maxSize;
 
-  container.addChild(text);
+  wordsContainer.addChild(text);
   words.push(this);
 }
 WordField.prototype.move = function()
@@ -209,7 +145,7 @@ WordField.prototype.move = function()
       this.locked = true;
 
       //Cleaning word and field.
-      container.removeChild(this.text);
+      wordsContainer.removeChild(this.text);
       fields.splice(fields.indexOf(this.field),1);
       words.splice(words.indexOf(this),1);
 
@@ -607,7 +543,7 @@ function unlockParticles()
   particles.forEach(function(p){
     p.locked = false;
   });
-  container.addChild(bhGraphics);
+  //container.addChild(bhGraphics);
 }
 
 function checkStep3Done()
