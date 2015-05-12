@@ -1,3 +1,4 @@
+// FPS STATS COUNTER
 var stats = new Stats();
 stats.setMode(0); // 0: fps, 1: ms
 
@@ -8,6 +9,8 @@ stats.domElement.style.top = '0px';
 document.body.appendChild( stats.domElement );
 var token = "71ffe134c2cb7f2c5375d7c23fbf90d2";
 
+
+// Init
 setTimeout(function(){
   $('.inputWrapper').addClass('ready');
   $('#request').focus().keypress(function(e) {
@@ -15,13 +18,11 @@ setTimeout(function(){
         $(this).blur();
         $('.inputWrapper,body').addClass('go');
         go($(this).val());
-        setTimeout(function(){
-         // $('body').css('background','black');
-        },1000);
     }
   });
 }, 1500);
 
+// Creating stage and containers
 var stage = new PIXI.Stage();
 var container = new PIXI.DisplayObjectContainer();
 var wordsContainer = new PIXI.DisplayObjectContainer();
@@ -34,7 +35,7 @@ var wrapper = document.getElementsByClassName('canvasWrapper')[0];
 var renderer = PIXI.autoDetectRenderer(cw,ch,null,true,true);
 wrapper.appendChild(renderer.view);
 
-
+// Getting particles textures
 var particleTexture = new PIXI.Texture.fromImage('particle_sprite.png');
 var particleStarTexture = new PIXI.Texture.fromImage('particle-star.png');
 var particles = [];
@@ -42,17 +43,13 @@ var butterflyParticles = [];
 var particlesDone = 0;
 
 
-
+// Setupin attraction field
 var mainhole = new Field(new Vector(cw/2, ch/2), 440);
 var fields = [mainhole];
 
+
+// Drawing
 drawBlackhole();
-
-
-
-// var text = new PIXI.Text("Pixi.js can has text!", {font:"50px Arial", fill:"red"});
-// stage.addChild(text);
-
 
 
 //Select some to be animated
@@ -68,188 +65,19 @@ butterfly.putButterfly();
 
 //Create background
 var maxParticles = 4226;
-//maxParticles = 10;
-//maxParticles = 1;
 for (var i =0;i<maxParticles;i++)
 {
   new StarParticle();
 }
 
-//UNCOMMENT BEHIND + REDUCE MAX PARTICLES
-
-
-// for (var i =0;i<particles.length;i++)
-// {
-//   var p = particles[i];
-//   p.reset();
-// }
-// unlockParticles();
-// var apiData;
-// $.getJSON('sample.json',function(data){
-//  apiData = data;
-//    parseData(apiData);
-// });
 
 currentInterval = 0;
 clusters = [];
 maxClusterSize = 90;
-
-
 words = [];
-function WordField(word,maxSize,cluster)
-{
-  this.cluster = cluster;
-  this.word = word;
-  this.isCluster = this.isWordACluster();
-  this.color = this.isCluster ? "orange" : "white";
-  this.reset();
-  var text = new PIXI.Text(word, {font: this.fontSize + "px Lato", fill: this.color});
-  text.anchor.set(0.5);
-  text.position = this.position;
-  this.sprite = text;
-  this.field = new Field(this.position, this.fontSize);
-  this.field.dontHideParticles = true;
-  fields.push(this.field);
-  this.maxSize = maxSize;
-
-  wordsContainer.addChild(text);
-  words.push(this);
-}
-WordField.prototype.move = function()
-{
-   if (this.locked) return;
-   var acceleration = this.velocity;
-   this.position.add(acceleration);
-   //this.updateField();
 
 
-
-   var distance = this.position.getDistance(new Vector(cw/2,ch/2));
-   //console.log(distance);
-   if (distance > cw/4*0.8 && this.isCluster && !this.noLock)this.locked = true, this.cluster.loadCorrelated();
-
-
-   if (!this.initialDistance) this.initialDistance = cw/4;
-   //var scale = ((cw/2)/(cw/2)-distance);
-   var scale = this.maxSize*(distance)/this.initialDistance;
-   //if (scale > this.maxSize || scale < 0 || isNaN(scale) || typeof scale != "number") scale = 10;
-   //console.log(scale);
-   this.fontSize = Math.min(scale,this.maxSize);
-   this.updateText();
-   this.field.mass = scale;
-
-   var margin = Math.max(this.sprite.height/2,this.sprite.width/2);
-   if (this.position.x > cw+margin || this.position.x < 0-margin || this.position.y > ch+margin || this.position.y < 0-margin)
-   {
-      console.log(this,this.position,'OUT');
-      this.locked = true;
-
-      //Cleaning word and field.
-      wordsContainer.removeChild(this.text);
-      fields.splice(fields.indexOf(this.field),1);
-      words.splice(words.indexOf(this),1);
-
-
-      if (this.isCluster)
-      {
-        //Delete from clusters array
-        //Delete all children sprite + self sprite.
-        var next = this.cluster.findNext();
-        if (next)
-        {
-          this.locked = false;
-          this.cluster.noLock = false;
-          this.cluster.newFrom(next);
-        }
-        else
-        {
-          if (!words.length)
-          {
-            animCallBack('Data Fetching Ended').done(function(){
-              setTimeout(function(){
-                  $('.bodywrapper').animate({opacity:0},2000,function(){
-                    document.location.reload();
-                  });
-                },4000);
-            });
-          }
-        }
-        return;
-      }
-      //Out of bounds.
-
-
-
-      this.cluster.doneCorrelated--;
-      if (this.cluster.doneCorrelated === 0 && !this.cluster.wordField.noLock)
-      {
-        this.cluster.doneCorrelated--;
-        console.log(this.cluster,'ENDED->next interval');
-        var nextCluster = this.cluster.isInNextInterval();
-        if (nextCluster)
-        {
-          this.cluster.resetWith(nextCluster);
-        }
-        else
-        {
-          if (!this.cluster.wordField.noLock)
-          {
-            //debugger;
-            this.cluster.wordField.noLock = true;
-            this.cluster.wordField.locked = false;
-          }
-        }
-      }
-   }
-};
-WordField.prototype.isWordACluster = function()
-{
-  //debugger;
-  return this.cluster.name == this.word;
-};
-WordField.prototype.reset = function()
-{
-  var wCoef = Math.random() > 0.5 ? -1 : 1;
-  var hCoef = Math.random() > 0.5 ? -1 : 1;
-  if (this.isCluster)
-  {
-    var oldCluster = clusters.indexOf(this.cluster);
-    var id = oldCluster > -1 ? oldCluster : clusters.length % 3;
-    if (id === 0)
-    {
-      this.velocity = new Vector(Math.random()/2+0.05,Math.random()/2+0.05);
-    }
-    if (id == 1)
-    {
-      this.velocity = new Vector(-(Math.random()/2+0.05),-(Math.random()/2+0.05));
-    }
-    if (id == 2)
-    {
-      this.velocity = new Vector(Math.random()/2+0.05,-(Math.random()/2+0.05));
-    }
-    console.log(id,this.velocity,this);
-  }
-  else
-  {
-    //random this.velocity = new Vector(wCoef*(Math.random()/2+0.05),hCoef*(Math.random()/2+0.05));
-    this.velocity = this.cluster.wordField.velocity.clone();
-    this.velocity.mult(1.05);
-  }
-
-  this.position = new Vector(cw/2+wCoef*(Math.random()*20+10),ch/2+hCoef*(Math.random()*20+10));
-  this.fontSize = 1;
-};
-// WordField.prototype.updateField = function()
-// {
-//   this.field.position = new Field(new Vector(this.sprite.position.x, this.sprite.position.y), -this.fontSize*500);
-// };
-WordField.prototype.updateText = function()
-{
-  this.sprite.style.font = this.fontSize + "px Lato";
-  this.sprite.updateText();
-};
-
-
+// Creating clusters from api data
 function parseData(apiData)
 {
   intervals = apiData[1].children;
@@ -262,91 +90,7 @@ function parseData(apiData)
   });
 }
 
-
-
-
-function Cluster(name,cluster,intervalNb)
-{
-   this.currentInterval = intervalNb;
-   this.name = name;
-   this.cluster = cluster;
-   this.reset();
-   clusters.push(this);
-}
-Cluster.prototype.reset = function(keepweight)
-{
-  this.children = this.cluster.children.slice(0,5);
-  if (!keepweight)
-  {
-    this.weight = maxClusterSize/(clusters.length+1);
-  }
-  this.wordField = new WordField(this.name,this.weight,this);
-};
-
-Cluster.prototype.resetWith = function(cluster)
-{
-   this.name = cluster.name.split('cluster ')[1];
-   this.cluster = cluster;
-   this.children = cluster.children.slice(0,5);
-   this.loadCorrelated();
-};
-Cluster.prototype.isInNextInterval = function()
-{
-    this.currentInterval++;
-    var clusterName = this.name;
-    var next = this.currentInterval;
-    if (!intervals[next]) return false;
-    var potentialCluster = intervals[next].children[1].children.slice(0,3).filter(function(cluster){
-        var name = cluster.name.split('cluster ')[1];
-        return name == clusterName;
-      });
-    if (!potentialCluster.length) return false;
-    return potentialCluster[0];
-};
-
-Cluster.prototype.findNext = function()
-{
-    //Interval got already upgraded
-    var next = this.currentInterval;
-    var list = clusters.map(function(c){return c.name;});
-    if (!intervals[next]) return false;
-    var potentialCluster = intervals[next].children[1].children.slice(0,3).filter(function(cluster){
-        var name = cluster.name.split('cluster ')[1];
-        return list.indexOf(name) == -1;
-      });
-    if (!potentialCluster.length) return false;
-    return potentialCluster[0];
-};
-
-Cluster.prototype.newFrom = function(newCluster)
-{
-    this.name = newCluster.name.split('cluster ')[1];
-    this.reset(true);
-};
-
-Cluster.prototype.loadCorrelated = function()
-{
-   console.log('Loading correlated for',this.name,this.children.length);
-   this.doneCorrelated = this.children.length;
-   for (var i=0;i<this.children.length;i++)
-   {
-     this.doTimeout(this,i);
-   }
-};
-
-Cluster.prototype.doTimeout = function(that,i)
-{
-  //console.log(i,'i');
-  setTimeout(function(){
-    var c = that.children[i];
-    c.wordField = new WordField(c.name,that.weight/2+(that.weight*c.keyword_count/100),that);
-
-  },i*3000);
-};
-
-
-//go('Hello');
-
+// Launching animation
 function go(keyword){
   api = new Api(keyword);
   $('.infoWrapper').text('Checking connectivity').removeClass('hidden');
@@ -359,10 +103,16 @@ function go(keyword){
   particlesTo = particles.length - particlesLeft.length;
   console.log('Left',particlesLeft.length);
 }
-// keyword = (location.search && location.search.split('text=')[1] ? decodeURIComponent(location.search.split('text=')[1]) : 'Hello');
 
 
 requestAnimFrame(animate);
+
+//Animation handling
+// Step 0 : Particles on background
+// Step 1 : Animate into word
+// Step 2 : Animate into butterfly
+// Step 3 : Animate into Field
+// Step 4 : Animate from field around words
 function animate()
 {
   stats.begin();
@@ -411,7 +161,6 @@ function animate()
   }
   else
   {
-    //animateBg();
     for(var i=0;i<particles.length;i++)
     {
       var p = particles[i];
@@ -527,7 +276,6 @@ function checkStep2Done()
       animCallBack('Merging Cluster Data');
       bg.ready = false;
       bg.input = true;
-      //bg.outPut = true;
       particlesDone = 0;
       bhSprite.alpha = 0.4;
       checkStep3Done();
@@ -543,7 +291,6 @@ function unlockParticles()
   particles.forEach(function(p){
     p.locked = false;
   });
-  //container.addChild(bhGraphics);
 }
 
 function checkStep3Done()

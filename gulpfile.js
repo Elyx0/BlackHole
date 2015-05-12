@@ -18,12 +18,6 @@ gulp.task('style',function(){
         .pipe(gulp.dest('assets'));
 });
 
-gulp.task('express', function() {
-  // var express = require('express');
-  // var app = express();
-  // app.use(express.static(__dirname));
-  // app.listen(4000);
-});
 
 gulp.task('watch', function() {
   gulp.watch('sass/*.scss', ['style']);

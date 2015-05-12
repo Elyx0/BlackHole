@@ -4,6 +4,8 @@ var Api = function (word)
     this.resolved = false;
     this.setup();
 };
+
+// Setup query for a term.
 Api.prototype.setup = function ()
 {
     var that = this;
@@ -14,6 +16,8 @@ Api.prototype.setup = function ()
         that.pollStatus();
     });
 };
+// Polls until status resolves
+// Todo: Use deferred/promise
 Api.prototype.pollStatus = function ()
 {
     var that = this;
@@ -37,5 +41,3 @@ Api.prototype.pollStatus = function ()
     }
 
 };
-
-// api.data[1].children.forEach(function(interval){ console.log(interval.interval_start_time,interval.children[1]) })
