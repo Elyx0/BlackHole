@@ -9,7 +9,7 @@ var Api = function (word)
 Api.prototype.setup = function ()
 {
     var that = this;
-    $.getJSON('http://api.keywordmeme.com/v1/fetch?api_token=' + token + '&q=' + this.word, function (data)
+    $.getJSON('https://api.keywordmeme.com/v1/fetch?api_token=' + token + '&q=' + this.word, function (data)
     {
         console.log(data);
         that.query_token = data.query_token;
@@ -25,7 +25,7 @@ Api.prototype.pollStatus = function ()
     {
         setTimeout(function ()
         {
-            $.getJSON('http://api.keywordmeme.com/v1/fetch?query_token=' + that.query_token + '&api_token=' + token, function (data)
+            $.getJSON('https://api.keywordmeme.com/v1/fetch?query_token=' + that.query_token + '&api_token=' + token, function (data)
             {
                 //console.log(data);
                 if (data[0] && data[0].status == "success")

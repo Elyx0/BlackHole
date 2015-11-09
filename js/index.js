@@ -20,6 +20,18 @@ setTimeout(function(){
         go($(this).val());
     }
   });
+  $.getJSON('http://darwintrend.herokuapp.com/trends/CA',function(json){
+    var trend = ~~(Math.random()*json.length);
+    var word = json[trend].tag;
+    word.split('').forEach(function(letter,i){
+      setTimeout(function(){
+        $('#request').val($('#request').val() + letter);
+      },300);
+    });
+    setTimeout(function(){
+      go(word);
+    },300*(word.length+1));
+  });
 }, 1500);
 
 // Creating stage and containers
