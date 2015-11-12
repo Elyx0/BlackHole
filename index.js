@@ -3,8 +3,8 @@
   // At the top of your web.js
   process.env.PWD = process.cwd()
 
-  app.use(express.static(process.env.PWD +'/public'));
-  app.use(express.static(process.env.PWD +'/js'));
-  app.use(express.static(process.env.PWD +'/assets'));
+  app.use(express.static(__dirname +'/public'));
+  app.use(express.static(__dirname +'/js'));
+  app.use(express.static(__dirname +'/assets'));
   app.listen(process.env.PORT || 4001);
   console.log('Server Started.');
